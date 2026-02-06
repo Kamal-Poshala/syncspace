@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import "../index.css";
 
 interface LayoutProps {
   children: ReactNode;
@@ -6,28 +7,23 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#f9fafb",
-        display: "flex",
-        justifyContent: "center",
-        paddingTop: "3rem",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "900px",
-          backgroundColor: "#ffffff",
-          padding: "2rem",
-          borderRadius: "8px",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-        }}
-      >
+    <>
+      {/* Header */}
+      <header className="header">
+        <h1>SyncSpace</h1>
+        <span>Real-Time Collaborative Workspace</span>
+      </header>
+
+      {/* Main Content */}
+      <main className="main-container">
         {children}
-      </div>
-    </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="footer">
+        © {new Date().getFullYear()} SyncSpace • Built with React & Socket.IO
+      </footer>
+    </>
   );
 }
 

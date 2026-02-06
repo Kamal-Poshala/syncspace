@@ -5,20 +5,15 @@ interface EditorProps {
 
 function Editor({ content, onChange }: EditorProps) {
   return (
-    <textarea
-      value={content}
-      onChange={(e) => onChange(e.target.value)}
-      rows={12}
-      style={{
-        width: "100%",
-        marginTop: "1.5rem",
-        padding: "1rem",
-        fontSize: "1rem",
-        borderRadius: "6px",
-        border: "1px solid #ccc",
-        resize: "vertical",
-      }}
-    />
+    <section className="editor">
+      <h3 style={{ marginBottom: "0.5rem" }}>Workspace Editor</h3>
+
+      <textarea
+        value={content}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Start collaborating here..."
+      />
+    </section>
   );
 }
 

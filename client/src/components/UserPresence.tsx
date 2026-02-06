@@ -9,10 +9,11 @@ interface UserPresenceProps {
 
 function UserPresence({ users }: UserPresenceProps) {
   return (
-    <div style={{ marginTop: "1.5rem" }}>
+    <section className="users">
       <h3>Active Users</h3>
+
       {users.length === 0 ? (
-        <p style={{ color: "#777" }}>No users connected</p>
+        <p style={{ color: "#6b7280" }}>No users connected</p>
       ) : (
         <ul>
           {users.map((u) => (
@@ -20,7 +21,7 @@ function UserPresence({ users }: UserPresenceProps) {
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }
 
