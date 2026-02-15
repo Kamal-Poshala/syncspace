@@ -6,26 +6,25 @@ SyncSpace is a premium, real-time collaborative workspace built for modern teams
 
 ## ✨ Visual Overview
 
-### 🔐 Modern Authentication
-![Authentication Flow](docs/images/auth.png)
-*Glassmorphism UI with secure JWT-based authentication.*
+### 🔐 Secure Authentication
+![Authentication](docs/images/auth.png)
+*Sleek, glassmorphism-inspired registration for new users.*
 
-### 🚀 Dynamic Dashboard
+### 🚀 Personalized Dashboard
 ![Dashboard](docs/images/dashboard.png)
-*Unified workspace management with a sleek animated interface.*
+*Unified workspace management with a high-fidelity design.*
 
-### 👥 Real-Time Collaboration & Invites
-![Collaboration](docs/images/collab.png)
-*Live active user tracking, instant messaging, and collaborative canvas view.*
+### 🛠️ Workspace Creation & Management
+![Create Workspace](docs/images/create.png)
+*Easily spin up new team environments with a single click.*
 
----
+### 👥 Seamless Collaboration & Invites
+![Invite & Join](docs/images/invite.png)
+*Live collaboration with instant presence tracking and integrated invite systems.*
 
-## 🛠️ Workspace Management
-
-| Workspace Details | Isolation & Presence | Invite Management |
-| :---: | :---: | :---: |
-| ![Workspace Detail](docs/images/workspace_detail.png) | ![Workspace Isolation](docs/images/workspace_isolation.png) | ![Invite Details](docs/images/invite_details.png) |
-| *Switching between workspaces* | *Isolated environments* | *Managing member invites* |
+### 📥 Effortless Onboarding
+![Join Modal](docs/images/join.png)
+*Intuitive modal flow for joining shared workspaces.*
 
 ---
 
@@ -86,15 +85,6 @@ graph TD
 - **Debounced Inputs**: Reduces socket event frequency during active typing.
 - **Throttled DB Operations**: Protects database from write-heavy real-time updates.
 - **Single Connection**: Persistent socket connection with intelligent room switching for workspace changes.
-
----
-
-## 🌐 Cloud Infrastructure
-
-| Koyeb (Backend) | Vercel (Frontend) |
-| :---: | :---: |
-| ![Koyeb Setup](docs/images/koyeb_setup.png) | ![Vercel Setup](docs/images/vercel_setup.png) |
-| *Persistent WebSocket Hosting* | *Static Site Hosting* |
 
 ---
 
