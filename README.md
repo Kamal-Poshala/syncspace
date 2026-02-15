@@ -26,6 +26,10 @@ SyncSpace is a premium, real-time collaborative workspace built for modern teams
 ![Join Modal](docs/images/join.png)
 *Intuitive modal flow for joining shared workspaces.*
 
+### Messaging
+![Messages](docs/images/messages.png).
+*Live messaging with teammates.*
+
 ---
 
 ## 🚀 Key Features
@@ -123,4 +127,4 @@ npm run dev
 
 ### 🛠️ Maintenance & Deployment
 
-Built and maintained with **Antigravity AI**. Deployed on **Koyeb** (Backend) and **Vercel** (Frontend).
+Built and maintained with the help of **Google AI**. Deployed on **Koyeb** (Backend) and **Vercel** (Frontend).
