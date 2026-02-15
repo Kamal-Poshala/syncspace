@@ -134,6 +134,18 @@
 }
 
 @layer base {
+
+  input,
+  textarea,
+  [contenteditable] {
+    caret-color: #000000 !important;
+  }
+
+  ::placeholder {
+    color: #ffffff !important;
+    opacity: 0.9 !important;
+  }
+
   * {
     @apply border-border;
   }

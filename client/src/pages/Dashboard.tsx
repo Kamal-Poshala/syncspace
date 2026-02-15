@@ -96,7 +96,8 @@ export default function Dashboard() {
                                 <input
                                     type="text"
                                     placeholder="Workspace Name"
-                                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-black font-medium placeholder-blue-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    style={{ caretColor: '#000000' }}
                                     value={newWorkspaceName}
                                     onChange={(e) => setNewWorkspaceName(e.target.value)}
                                 />
@@ -112,7 +113,8 @@ export default function Dashboard() {
                                 <input
                                     type="text"
                                     placeholder="Invite Code or Link"
-                                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-black font-medium placeholder-blue-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    style={{ caretColor: '#000000' }}
                                     value={joinCode}
                                     onChange={(e) => setJoinCode(e.target.value)}
                                 />

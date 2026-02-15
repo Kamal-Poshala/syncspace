@@ -5,6 +5,9 @@ import Sidebar from "../components/Sidebar";
 import RichEditor from "../components/RichEditor";
 import ChatArea from "../components/ChatArea";
 import { useAuth } from "../context/AuthContext";
+import { ChevronLeft, MessageSquare, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "../lib/utils";
 
 // Helper to generate consistent color from string
 const stringToColor = (str: string) => {
@@ -27,18 +30,18 @@ export default function WorkspaceView() {
         socket,
         onlineUsers,
         typingUsers,
-        channels
+        channels,
+        content,
+        setContent
     } = useWorkspace();
 
-    const [content, setContent] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [showChatPanel, setShowChatPanel] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (slug) {
             selectWorkspace(slug);
-            // Clear content when switching workspaces to prevent old content from showing
-            setContent("");
         }
     }, [slug]);
 
@@ -55,25 +58,6 @@ export default function WorkspaceView() {
         }
     }, [slug, channelId, docId, dmId, channels, navigate]);
 
-    // Sync content from socket (Only for Canvas/Doc mode, not for Chat)
-    useEffect(() => {
-        if (!socket) return;
-        // Only listen when viewing Canvas (no channelId/dmId) or a specific doc
-        if (channelId || dmId) return;
-
-        socket.on("workspace:connected", (data: any) => {
-            setContent(data.content || "");
-        });
-
-        socket.on("workspace:update", (data: any) => {
-            setContent(data.content);
-        });
-
-        return () => {
-            socket.off("workspace:connected");
-            socket.off("workspace:update");
-        };
-    }, [socket, docId, slug, channelId, dmId]); // Added channelId, dmId to dependencies
 
     const handleContentChange = (val: string) => {
         setContent(val);
@@ -94,61 +78,104 @@ export default function WorkspaceView() {
 
     const userColor = user ? stringToColor(user._id || user.username) : "#fef08a";
 
-    const showChat = !!channelId || !!dmId;
+    // Navigation logic
+    const isEditingDoc = !!docId;
+    const isMessaging = !!channelId || !!dmId;
+
+    const currentChannel = isMessaging ? channels.find(c => c._id === channelId) : null;
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-white/80 backdrop-blur-3xl transition-colors duration-500">
+        <div className="flex h-screen w-full overflow-hidden bg-gray-50/50 transition-colors duration-500">
             <Sidebar />
 
-            <main className="flex flex-1 flex-col relative z-10">
+            <main className="flex flex-1 flex-col relative z-10 overflow-hidden">
                 {/* Topbar */}
-                <header className="flex h-16 items-center justify-between border-b border-gray-200/40 bg-white/60 px-8 backdrop-blur-xl transition-all">
-                    <div className="flex items-center text-gray-800">
-                        <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">#{currentWorkspace.slug}</span>
+                <header className="flex h-16 items-center justify-between border-b border-gray-200/60 bg-white/80 px-4 md:px-6 backdrop-blur-xl transition-all">
+                    <div className="flex items-center gap-4 text-gray-800">
+                        <Link
+                            to="/dashboard"
+                            className="flex items-center gap-1 rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition-colors"
+                            title="Back to Dashboard"
+                        >
+                            <ChevronLeft className="h-5 w-5" />
+                        </Link>
+
+                        <div className="h-6 w-px bg-gray-200 ml-1 mr-2 hidden md:block"></div>
+
+                        <div className="flex items-center gap-2 overflow-hidden">
+                            <span className="hidden sm:inline text-sm font-medium text-gray-400">Workspaces</span>
+                            <span className="hidden sm:inline text-gray-300">/</span>
+                            <span className="text-sm font-bold text-gray-900 truncate">{currentWorkspace.name}</span>
+                            {isMessaging && (
+                                <>
+                                    <span className="text-gray-300">/</span>
+                                    <span className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 truncate">
+                                        <MessageSquare className="h-3.5 w-3.5" />
+                                        {currentChannel ? `#${currentChannel.name}` : "Direct Message"}
+                                    </span>
+                                </>
+                            )}
+                            {isEditingDoc && (
+                                <>
+                                    <span className="text-gray-300">/</span>
+                                    <span className="flex items-center gap-1.5 text-sm font-semibold text-purple-600 truncate">
+                                        <FileText className="h-3.5 w-3.5" />
+                                        Canvas
+                                    </span>
+                                </>
+                            )}
+                        </div>
+
                         {typingUsers.length > 0 && (
-                            <span className="ml-4 flex items-center text-xs font-medium text-blue-600 animate-in fade-in slide-in-from-left-4 duration-300">
+                            <span className="ml-4 hidden lg:flex items-center text-xs font-medium text-blue-600 animate-in fade-in slide-in-from-left-4 duration-300">
                                 <span className="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-blue-600"></span>
-                                {typingUsers.join(", ")} is typing...
+                                {typingUsers[0]} is typing...
                             </span>
                         )}
                     </div>
 
-                    <div className="flex items-center space-x-4">
-                        <div className="flex -space-x-3 overflow-hidden p-1">
-                            {onlineUsers.slice(0, 5).map((u) => (
-                                <div key={u._id} className="relative transition-transform hover:z-10 hover:scale-110">
-                                    <img
-                                        className="inline-block h-9 w-9 rounded-full ring-2 ring-white object-cover"
-                                        src={u.avatar || "https://via.placeholder.com/32"}
-                                        alt={u.username}
-                                        title={u.username}
-                                    />
-                                </div>
+                    <div className="flex items-center space-x-3">
+                        <div className="flex -space-x-2 overflow-hidden p-1 mr-2 hidden sm:flex">
+                            {onlineUsers.slice(0, 3).map((u) => (
+                                <img
+                                    key={u._id}
+                                    className="h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-sm transition-transform hover:z-10 hover:scale-110"
+                                    src={u.avatar || "https://via.placeholder.com/32"}
+                                    alt={u.username}
+                                    title={u.username}
+                                />
                             ))}
-                            {onlineUsers.length > 5 && (
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 ring-2 ring-white text-xs font-bold text-gray-500">
-                                    +{onlineUsers.length - 5}
+                            {onlineUsers.length > 3 && (
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-2 ring-white text-[10px] font-bold text-gray-500 shadow-sm">
+                                    +{onlineUsers.length - 3}
                                 </div>
                             )}
                         </div>
-                        <div className="h-8 w-px bg-gray-200/50 mx-2"></div>
-                        <span className="text-xs font-semibold text-green-700 px-3 py-1 bg-green-100/50 border border-green-200/50 rounded-full flex items-center gap-1.5">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            </span>
-                            {onlineUsers.length} Online
-                        </span>
+
+                        <button
+                            onClick={() => setShowChatPanel(!showChatPanel)}
+                            className={cn(
+                                "flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all border",
+                                showChatPanel
+                                    ? "bg-blue-50 text-blue-600 border-blue-200"
+                                    : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
+                            )}
+                        >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            {showChatPanel ? "Hide Chat" : "Show Chat"}
+                        </button>
                     </div>
                 </header>
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-hidden p-0 relative">
-                    {showChat ? (
-                        <ChatArea channelId={channelId} dmId={dmId} />
-                    ) : (
-                        <div className="h-full p-6 md:p-8 lg:p-10 overflow-y-auto">
-                            <div className="h-full mx-auto max-w-5xl shadow-2xl shadow-blue-900/5 rounded-2xl border border-white/50 bg-white/80 backdrop-blur-sm ring-1 ring-black/5 transition-all duration-500 hover:shadow-blue-900/10">
+                {/* Content Area - Split Layout */}
+                <div className="flex flex-1 overflow-hidden p-0 relative bg-gray-50/30">
+                    {/* Main Workspace (Canvas) */}
+                    <div className={cn(
+                        "flex-1 h-full flex flex-col transition-all duration-300 ease-in-out",
+                        showChatPanel && isMessaging ? "hidden lg:flex" : "flex"
+                    )}>
+                        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar">
+                            <div className="mx-auto max-w-5xl h-full">
                                 <RichEditor
                                     content={content}
                                     onChange={handleContentChange}
@@ -156,7 +183,27 @@ export default function WorkspaceView() {
                                 />
                             </div>
                         </div>
-                    )}
+                    </div>
+
+                    {/* Chat Side Panel */}
+                    <div className={cn(
+                        "h-full border-l border-gray-200 bg-white transition-all duration-300 ease-in-out z-20 shadow-xl lg:shadow-none",
+                        showChatPanel && isMessaging ? "w-full lg:w-[400px]" : "w-0 opacity-0 overflow-hidden border-none"
+                    )}>
+                        {isMessaging && <ChatArea channelId={channelId} dmId={dmId} />}
+
+                        {!isMessaging && showChatPanel && (
+                            <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-gray-50/50">
+                                <div className="mb-4 rounded-full bg-blue-100/50 p-4">
+                                    <MessageSquare className="h-8 w-8 text-blue-500" />
+                                </div>
+                                <h3 className="text-lg font-bold text-gray-900">Workspace Chat</h3>
+                                <p className="mt-2 text-sm text-gray-500 max-w-xs">
+                                    Select a channel or direct message from the sidebar to chat with your team while you edit.
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </main>
         </div>

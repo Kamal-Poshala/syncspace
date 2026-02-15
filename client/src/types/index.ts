@@ -18,6 +18,7 @@ export interface Workspace {
     inviteCode?: string;
     owner: User | string;
     members: Member[];
+    content?: string;
     createdAt: string;
     updatedAt: string;
 }

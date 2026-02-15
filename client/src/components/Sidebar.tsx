@@ -2,18 +2,20 @@ import { Link } from "react-router-dom";
 import { useWorkspace } from "../context/WorkspaceContext";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
-import { Hash, Plus, UserPlus, Settings } from "lucide-react";
+import { Hash, Plus, UserPlus, Settings, LogOut } from "lucide-react";
 import { useState } from "react";
 import InviteModal from "./InviteModal";
 import ProfileSettings from "./ProfileSettings";
 import CreateChannelModal from "./CreateChannelModal";
+import WorkspaceSettingsModal from "./WorkspaceSettingsModal";
 
 export default function Sidebar() {
     const { workspaces, currentWorkspace, channels, dms, refreshChannels } = useWorkspace();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [showInvite, setShowInvite] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [showCreateChannel, setShowCreateChannel] = useState(false);
+    const [showWorkspaceSettings, setShowWorkspaceSettings] = useState(false);
 
     // Mock DM creation using Invite Modal for now or add a User Search Modal
     // For now, let's use the Invite modal as a way to "find" people, but ideally we have a "New Message" button
@@ -34,9 +36,12 @@ export default function Sidebar() {
                         <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                             Workspaces
                         </h3>
-                        <Link to="/" className="text-gray-500 hover:text-white">
-                            <Settings className="h-3 w-3" />
-                        </Link>
+                        <button
+                            onClick={() => setShowWorkspaceSettings(true)}
+                            className="text-gray-500 hover:text-white transition-colors"
+                        >
+                            <Settings className="h-3.5 w-3.5" />
+                        </button>
                     </div>
                     <div className="space-y-1">
                         {workspaces.map((ws) => (
@@ -55,7 +60,7 @@ export default function Sidebar() {
                             </Link>
                         ))}
                         <Link
-                            to="/"
+                            to="/dashboard"
                             className="flex items-center rounded-md px-2 py-1.5 text-sm text-gray-500 hover:bg-gray-800 hover:text-white"
                         >
                             <Plus className="mr-2 h-4 w-4" />
@@ -174,10 +179,10 @@ export default function Sidebar() {
             </div>
 
             {/* User Footer */}
-            <div className="border-t border-gray-800 p-4">
+            <div className="border-t border-gray-800 p-4 space-y-2">
                 <button
                     onClick={() => setShowProfile(true)}
-                    className="flex w-full items-center rounded-lg p-2 hover:bg-gray-800"
+                    className="flex w-full items-center rounded-lg p-2 hover:bg-gray-800 transition-colors"
                 >
                     <div className="relative">
                         <img src={user?.avatar} alt="" className="h-9 w-9 rounded-full bg-gray-700 object-cover" />
@@ -188,10 +193,21 @@ export default function Sidebar() {
                         <p className="text-xs text-gray-500">Online</p>
                     </div>
                 </button>
+
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => logout()}
+                        className="w-full flex items-center justify-center rounded-lg bg-red-500/10 p-2 text-red-500 hover:bg-red-500/20 transition-all text-xs font-bold"
+                    >
+                        <LogOut className="mr-2 h-3.5 w-3.5" />
+                        Logout
+                    </button>
+                </div>
             </div>
 
             <InviteModal isOpen={showInvite} onClose={() => setShowInvite(false)} />
             <ProfileSettings isOpen={showProfile} onClose={() => setShowProfile(false)} />
+            <WorkspaceSettingsModal isOpen={showWorkspaceSettings} onClose={() => setShowWorkspaceSettings(false)} />
             <CreateChannelModal
                 isOpen={showCreateChannel}
                 onClose={() => setShowCreateChannel(false)}

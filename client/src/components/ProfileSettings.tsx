@@ -115,7 +115,8 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                         type="text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
-                                        className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                        className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 text-black font-medium shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                        style={{ caretColor: '#000000' }}
                                     />
                                 </div>
                                 <div>
@@ -124,7 +125,8 @@ export default function ProfileSettings({ isOpen, onClose }: ProfileSettingsProp
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                        className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 text-black font-medium shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                        style={{ caretColor: '#000000' }}
                                     />
                                 </div>
                             </div>

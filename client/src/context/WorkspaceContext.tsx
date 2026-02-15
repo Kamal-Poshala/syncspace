@@ -16,6 +16,8 @@ interface WorkspaceContextType {
     generateInvite: (slug: string) => Promise<string>;
     joinWorkspace: (code: string) => Promise<{ slug: string; message: string }>;
     addMember: (slug: string, userId: string) => Promise<void>;
+    updateWorkspace: (slug: string, name: string) => Promise<Workspace>;
+    deleteWorkspace: (slug: string) => Promise<void>;
     onlineUsers: User[];
     typingUsers: string[];
     channels: Channel[];
@@ -23,6 +25,8 @@ interface WorkspaceContextType {
     dms: DM[];
     refreshDMs: () => Promise<void>;
     getOrCreateDM: (otherUserId: string) => Promise<DM | null>;
+    content: string;
+    setContent: (content: string) => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -39,6 +43,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     const [typingUsers, setTypingUsers] = useState<string[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
     const [dms, setDMs] = useState<DM[]>([]);
+    const [content, setContent] = useState("");
 
     // Fetch channels when workspace changes
     const refreshChannels = async () => {
@@ -137,6 +142,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
             setTypingUsers(prev => prev.filter(u => u !== username));
         });
 
+        // Content Sync
+        newSocket.on("workspace:connected", (data: { content?: string; users?: User[] }) => {
+            if (data.content !== undefined) setContent(data.content);
+            if (data.users) setOnlineUsers(data.users);
+        });
+
+        newSocket.on("workspace:update", (data: { content: string }) => {
+            setContent(data.content);
+        });
+
         return () => {
             console.log("Disconnecting socket");
             newSocket.disconnect();
@@ -156,21 +171,26 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
             socket.emit("workspace:leave", { slug: currentWorkspace.slug });
             setOnlineUsers([]);
             setTypingUsers([]);
+            // Don't clear content here, let selectWorkspace(null) handle it or keep it for next load
         };
     }, [socket, currentWorkspace?._id]);
 
     const selectWorkspace = async (slug: string | null) => {
         if (!slug) {
             setCurrentWorkspace(null);
+            setContent("");
             return;
         }
         setIsLoading(true);
         try {
             const data = await apiRequest<Workspace>(`/workspaces/${slug}`, { token: token! });
             setCurrentWorkspace(data);
+            // Use API content as starting point while waiting for socket
+            setContent(data.content || "");
         } catch (err) {
             console.error("Failed to select workspace", err);
             setCurrentWorkspace(null);
+            setContent("");
         } finally {
             setIsLoading(false);
         }
@@ -212,6 +232,34 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    const updateWorkspace = async (slug: string, name: string) => {
+        const data = await apiRequest<Workspace>(`/workspaces/${slug}`, {
+            method: "PUT",
+            body: JSON.stringify({ name }),
+            token: token!,
+        });
+
+        // Update local state
+        setWorkspaces(prev => prev.map(ws => ws.slug === slug ? data : ws));
+        if (currentWorkspace?.slug === slug) {
+            setCurrentWorkspace(data);
+        }
+
+        return data;
+    };
+
+    const deleteWorkspace = async (slug: string) => {
+        await apiRequest(`/workspaces/${slug}`, {
+            method: "DELETE",
+            token: token!,
+        });
+
+        setWorkspaces(prev => prev.filter(ws => ws.slug !== slug));
+        if (currentWorkspace?.slug === slug) {
+            setCurrentWorkspace(null);
+        }
+    };
+
     return (
         <WorkspaceContext.Provider value={{
             workspaces,
@@ -224,13 +272,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
             generateInvite,
             joinWorkspace,
             addMember,
+            updateWorkspace,
+            deleteWorkspace,
             onlineUsers,
             typingUsers,
             channels,
             refreshChannels,
             dms,
             refreshDMs,
-            getOrCreateDM
+            getOrCreateDM,
+            content,
+            setContent
         }}>
             {children}
         </WorkspaceContext.Provider>

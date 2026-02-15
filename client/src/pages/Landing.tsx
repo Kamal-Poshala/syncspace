@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Zap, Layout, Shield } from "lucide-react";
+import LandingNavbar from "../components/LandingNavbar";
+import LandingFooter from "../components/LandingFooter";
 
 export default function Landing() {
     return (
@@ -22,26 +24,7 @@ export default function Landing() {
                 <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-20" />
             </div>
 
-            {/* Navbar */}
-            <nav className="relative z-10 flex items-center justify-between px-8 py-6 backdrop-blur-sm">
-                <div className="flex items-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/20 backdrop-blur-md border border-blue-400/30">
-                        <Zap className="h-6 w-6 text-blue-400" />
-                    </div>
-                    <span className="text-2xl font-bold tracking-tight">SyncSpace</span>
-                </div>
-                <div className="flex items-center gap-6">
-                    <Link to="/login" className="text-sm font-medium text-gray-300 transition-colors hover:text-white">
-                        Log in
-                    </Link>
-                    <Link
-                        to="/register"
-                        className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-black transition-transform hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                    >
-                        Get Started
-                    </Link>
-                </div>
-            </nav>
+            <LandingNavbar />
 
             {/* Hero Section */}
             <main className="relative z-10 flex flex-col items-center justify-center px-4 pt-20 text-center sm:pt-32">
@@ -78,7 +61,7 @@ export default function Landing() {
                 </div>
 
                 {/* Feature Grid */}
-                <div className="mt-24 grid w-full max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-3">
+                <div id="features" className="mt-24 grid w-full max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 scroll-mt-24">
                     <FeatureCard
                         icon={<Layout />}
                         title="Premium UI"
@@ -96,6 +79,8 @@ export default function Landing() {
                     />
                 </div>
             </main>
+
+            <LandingFooter />
         </div>
     );
 }

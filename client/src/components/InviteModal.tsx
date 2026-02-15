@@ -130,7 +130,8 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                                         <input
                                             readOnly
                                             value={inviteLink}
-                                            className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-600 focus:outline-none"
+                                            className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-black font-medium focus:outline-none"
+                                            style={{ caretColor: '#000000' }}
                                         />
                                         <button
                                             onClick={handleCopy}
@@ -149,7 +150,8 @@ export default function InviteModal({ isOpen, onClose }: InviteModalProps) {
                                             placeholder="Search by username..."
                                             value={query}
                                             onChange={(e) => setQuery(e.target.value)}
-                                            className="w-full rounded-lg border border-gray-200 pl-10 pr-4 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                                            className="w-full rounded-lg border border-gray-200 pl-10 pr-4 py-2 text-black font-medium placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                                            style={{ caretColor: '#000000' }}
                                         />
                                     </div>
 

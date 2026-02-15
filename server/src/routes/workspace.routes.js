@@ -172,6 +172,63 @@ router.post("/:slug/add-member", authenticate, async (req, res) => {
     }
 });
 
+// Update Workspace (Owner only)
+router.put("/:slug", authenticate, async (req, res) => {
+    try {
+        const { name } = req.body;
+        const userId = req.user.userId || req.user.id;
+
+        if (!name) return res.status(400).json({ message: "Name is required" });
+
+        const workspace = await Workspace.findOne({ slug: req.params.slug });
+        if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+        if (workspace.owner.toString() !== userId) {
+            return res.status(403).json({ message: "Only owner can rename workspace" });
+        }
+
+        workspace.name = name;
+        await workspace.save();
+
+        res.json(workspace);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error updating workspace" });
+    }
+});
+
+// Delete Workspace (Owner only)
+router.delete("/:slug", authenticate, async (req, res) => {
+    try {
+        const userId = req.user.userId || req.user.id;
+        const workspace = await Workspace.findOne({ slug: req.params.slug });
+
+        if (!workspace) return res.status(404).json({ message: "Workspace not found" });
+
+        if (workspace.owner.toString() !== userId) {
+            return res.status(403).json({ message: "Only owner can delete workspace" });
+        }
+
+        // Remove workspace reference from all members
+        const memberIds = workspace.members.map(m => m.userId);
+        await User.updateMany(
+            { _id: { $in: memberIds } },
+            { $pull: { joinedWorkspaces: workspace._id } }
+        );
+
+        // Delete the workspace document
+        await Workspace.deleteOne({ _id: workspace._id });
+
+        // TODO: Optionally delete related channels, messages, etc.
+        // For now, keeping it simple as per "classic" requirements.
+
+        res.json({ message: "Workspace deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error deleting workspace" });
+    }
+});
+
 // Get Workspace Details
 router.get("/:slug", authenticate, async (req, res) => {
     try {

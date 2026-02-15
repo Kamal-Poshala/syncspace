@@ -157,24 +157,31 @@ export default function ChatArea({ channelId, dmId }: ChatAreaProps) {
     return (
         <div className="flex h-full flex-col bg-white">
             {/* Header */}
-            <div className="flex h-16 items-center border-b border-gray-200 px-6 shadow-sm">
-                <div className="flex items-center gap-2">
-                    {isChannel ? (
-                        currentChannel?.isPrivate ? <Lock className="h-5 w-5 text-gray-500" /> : <Hash className="h-5 w-5 text-gray-500" />
-                    ) : (
-                        <div className="relative">
-                            <img src={otherUser?.avatar} className="h-6 w-6 rounded-full bg-gray-200" alt="" />
-                            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full border border-white bg-green-500"></span>
-                        </div>
-                    )}
-                    <h2 className="text-lg font-bold text-gray-900">{contextName}</h2>
+            <div className="flex h-16 items-center border-b border-gray-200 px-4 md:px-6 shadow-sm bg-white">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    {/* Icon/Avatar */}
+                    <div className="flex-shrink-0">
+                        {isChannel ? (
+                            currentChannel?.isPrivate ? <Lock className="h-5 w-5 text-gray-500" /> : <Hash className="h-5 w-5 text-gray-500" />
+                        ) : (
+                            <div className="relative">
+                                <img src={otherUser?.avatar || "https://via.placeholder.com/32"} className="h-8 w-8 rounded-full bg-gray-200 object-cover" alt="" />
+                                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500"></span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col min-w-0">
+                        <h2 className="text-base font-bold text-black truncate leading-tight">{contextName}</h2>
+                        {isChannel && currentChannel?.topic && (
+                            <span className="text-[10px] text-gray-500 truncate">{currentChannel.topic}</span>
+                        )}
+                    </div>
                 </div>
-                {isChannel && currentChannel?.topic && (
-                    <span className="ml-4 text-sm text-gray-500 truncate border-l border-gray-300 pl-4">{currentChannel.topic}</span>
-                )}
+
                 {isChannel && (
-                    <div className="ml-auto flex items-center text-sm text-gray-500">
-                        <Users className="h-4 w-4 mr-1" />
+                    <div className="ml-auto flex items-center text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                        <Users className="h-3 w-3 mr-1" />
                         {currentChannel?.members.length}
                     </div>
                 )}
@@ -241,7 +248,8 @@ export default function ChatArea({ channelId, dmId }: ChatAreaProps) {
                         value={inputValue}
                         onChange={handleTyping}
                         placeholder={`Message ${isChannel ? `#${contextName}` : contextName}`}
-                        className="flex-1 bg-transparent px-2 py-2 text-gray-900 placeholder-gray-500 focus:outline-none"
+                        className="flex-1 bg-transparent px-2 py-2 text-black font-medium placeholder-blue-600 focus:outline-none"
+                        style={{ caretColor: '#000000' }}
                     />
                     <button
                         type="submit"

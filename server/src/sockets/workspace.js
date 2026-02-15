@@ -3,6 +3,19 @@ const Workspace = require("../models/Workspace");
 const channelHandler = require("./channel");
 const dmHandler = require("./dm");
 
+// In-memory cache for debounced updates
+const updateTimeouts = new Map();
+const PENDING_UPDATES = new Map();
+
+const persistUpdate = async (slug, content) => {
+  try {
+    await Workspace.findOneAndUpdate({ slug }, { content });
+    PENDING_UPDATES.delete(slug);
+  } catch (err) {
+    console.error(`Failed to persist workspace ${slug}:`, err);
+  }
+};
+
 module.exports = (io) => {
   // Helper to get all users in a room
   const getRoomUsers = (roomName) => {
@@ -47,10 +60,9 @@ module.exports = (io) => {
 
         const room = `workspace:${slug}`;
 
-        // Check if already in room to avoid duplicate logic if re-joining
-        if (socket.rooms.has(room)) return;
-
-        socket.join(room);
+        if (!socket.rooms.has(room)) {
+          socket.join(room);
+        }
 
         // Notify others
         socket.to(room).emit("user:joined", {
@@ -59,9 +71,12 @@ module.exports = (io) => {
         });
 
         // Send Snapshot to joiner
+        // If there's a pending update in memory, send that instead of what's in DB
+        const currentContent = PENDING_UPDATES.get(slug) || workspace.content;
+
         socket.emit("workspace:connected", {
           slug,
-          content: workspace.content,
+          content: currentContent,
           users: getRoomUsers(room),
         });
 
@@ -79,16 +94,28 @@ module.exports = (io) => {
     });
 
     // Content Update
-    socket.on("workspace:update", async ({ slug, content }) => {
+    socket.on("workspace:update", ({ slug, content }) => {
       const room = `workspace:${slug}`;
       // Verify room membership (basic check)
       if (!socket.rooms.has(room)) return;
 
-      // Persist to DB (Throttled ideally, but direct for now)
-      await Workspace.findOneAndUpdate({ slug }, { content });
+      // Update memory cache
+      PENDING_UPDATES.set(slug, content);
 
-      // Broadcast to others
+      // Broadcast to others IMMEDATELY for fluidity
       socket.to(room).emit("workspace:update", { content, updatedBy: socket.user.username });
+
+      // Debounce DB persistence (1 second)
+      if (updateTimeouts.has(slug)) {
+        clearTimeout(updateTimeouts.get(slug));
+      }
+
+      const timeout = setTimeout(() => {
+        persistUpdate(slug, content);
+        updateTimeouts.delete(slug);
+      }, 1000);
+
+      updateTimeouts.set(slug, timeout);
     });
 
     // Typing Indicators

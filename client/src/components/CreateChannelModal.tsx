@@ -77,7 +77,8 @@ export default function CreateChannelModal({ isOpen, onClose, onChannelCreated }
                             <input
                                 type="text"
                                 required
-                                className="block w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                                className="block w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm text-black font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                                style={{ caretColor: '#000000' }}
                                 placeholder="e.g. project-alpha"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -90,7 +91,8 @@ export default function CreateChannelModal({ isOpen, onClose, onChannelCreated }
                         <label className="block text-sm font-medium text-gray-700 mb-1">Topic (Optional)</label>
                         <input
                             type="text"
-                            className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                            className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-black font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition"
+                            style={{ caretColor: '#000000' }}
                             placeholder="What's this channel about?"
                             value={topic}
                             onChange={(e) => setTopic(e.target.value)}
