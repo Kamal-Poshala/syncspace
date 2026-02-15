@@ -1,42 +1,55 @@
 # SyncSpace — Real-Time Collaborative Workspace
 
-SyncSpace is a real-time collaborative text workspace built using **React, Node.js, Socket.IO, and MongoDB**.  
-It enables multiple users to edit shared content simultaneously with live presence tracking and persistent storage.
+SyncSpace is a premium, real-time collaborative workspace built for modern teams. It enables multiple users to edit shared documents, chat in channels/DMs, and manage projects with live presence tracking and persistent storage.
 
 ---
 
-## 🚀 Features
+## ✨ Visual Overview
 
-- 🔐 JWT-based authentication (REST + WebSockets)
-- ⚡ Real-time collaboration using Socket.IO
-- 👥 Live user presence tracking
-- 💾 Persistent workspace storage with MongoDB
-- 🧠 Optimized performance using debouncing & throttling
-- 🧩 Clean, modular React component architecture
+### 🔐 Modern Authentication
+![Authentication Flow](docs/images/auth.png)
+*Glassmorphism UI with secure JWT-based authentication.*
+
+### 🚀 Dynamic Dashboard
+![Dashboard](docs/images/dashboard.png)
+*Unified workspace management with a sleek animated interface.*
+
+### 👥 Real-Time Collaboration
+![Collaboration](docs/images/collab.png)
+*Live active user tracking, instant messaging, and collaborative canvas view.*
+
+---
+
+## 🚀 Key Features
+
+- **🔐 Robust Security**: JWT-based authentication across REST and WebSockets.
+- **⚡ Real-Time Engine**: High-performance collaboration powered by Socket.IO.
+- **👥 Presence & Typing**: Visual cues for who is online and actively participating.
+- **📁 Workspace Isolation**: Secure, slug-based rooms for different team projects.
+- **💬 Modular Chat**: Integrated Channels and Direct Messages (1:1 chat).
+- **💾 Auto-Persistence**: Throttled DB writes to MongoDB for data safety without performance lag.
 
 ---
 
 ## 🏗️ System Architecture
 
-```text
-Client (React)
-├── Auth (JWT)
-├── Editor (Debounced input)
-├── Presence UI
-│
-│ WebSocket (Socket.IO)
-▼
-Server (Node.js + Express)
-├── REST Auth API
-├── Socket Authentication Middleware
-├── Workspace Event Handlers
-│ ├── Join / Leave
-│ ├── Real-time Updates
-│ └── Throttled DB Writes
-▼
-MongoDB
-├── Users
-└── Workspaces
+```mermaid
+graph TD
+    Client[React Frontend] <-->|Socket.IO| Server[Node.js / Express Backend]
+    Server <-->|Mongoose| DB[(MongoDB Atlas)]
+    Client <-->|REST API| Server
+    
+    subgraph Frontend
+        Auth[JWT Auth]
+        Store[Zustand / Context]
+        Editor[Tiptap / Quill]
+    end
+    
+    subgraph Backend
+        SocketHandlers[Modular Socket Logic]
+        RBAC[Workspace RBAC Middleware]
+        Controllers[API Controllers]
+    end
 ```
 
 ---
@@ -44,121 +57,62 @@ MongoDB
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React (TypeScript)
-- Socket.IO Client
-- Modular component design
-- Debounced real-time updates
+- **Framework**: React (TypeScript)
+- **Styling**: TailwindCSS & Framer Motion
+- **Editor**: Tiptap (Rich Text)
+- **State**: Context API & Custom Hooks
+- **Real-time**: Socket.IO Client
 
 ### Backend
-- Node.js + Express
-- Socket.IO
-- JWT Authentication
-- Mongoose (MongoDB ORM)
-
-### Database
-- MongoDB (local or Atlas)
+- **Core**: Node.js + Express
+- **Real-time**: Socket.IO
+- **Auth**: JSON Web Tokens (JWT)
+- **Persistence**: MongoDB with Mongoose ORM
+- **Hosting**: Koyeb (Persistent WebSockets)
 
 ---
 
 ## ⚙️ Performance Optimizations
 
-- **Client-side debouncing** to reduce socket event spam
-- **Server-side throttling** to protect database writes
-- Immediate broadcasts for smooth real-time UX
+- **Debounced Inputs**: Reduces socket event frequency during active typing.
+- **Throttled DB Operations**: Protects database from write-heavy real-time updates.
+- **Single Connection**: Persistent socket connection with intelligent room switching for workspace changes.
 
 ---
 
-## 📁 Project Structure
+## ▶️ Running Locally (Development)
 
-```text
-  syncspace/
-  ├── client/
-  │ ├── src/
-  │ │ ├── components/
-  │ │ │ ├── Auth.tsx
-  │ │ │ ├── Layout.tsx
-  │ │ │ ├── UserPresence.tsx
-  │ │ │ └── Editor.tsx
-  │ │ ├── lib/
-  │ │ │ ├── socket.ts
-  │ │ │ └── debounce.ts
-  │ │ └── App.tsx
-  │ └── package.json
-  │
-  ├── server/
-  │ ├── src/
-  │ │ ├── config/db.js
-  │ │ ├── middleware/socketAuth.js
-  │ │ ├── models/
-  │ │ │ ├── User.js
-  │ │ │ └── Workspace.js
-  │ │ ├── routes/auth.routes.js
-  │ │ ├── sockets/workspace.js
-  │ │ ├── app.js
-  │ │ └── index.js
-  │ └── package.json
-  │
-  └── README.md
-```
----
-
-## ▶️ Running the Project Locally
-
-### 1️⃣ Start MongoDB
+### 1️⃣ Configure Environment
+Create a `.env` in `server/` following the `.env.example`:
 ```bash
-mongod
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_secret
+CLIENT_URL=http://localhost:5173
 ```
+
 ### 2️⃣ Start Backend
 ```bash
 cd server
 npm install
 npm run dev
 ```
+
 ### 3️⃣ Start Frontend
 ```bash
 cd client
 npm install
 npm run dev
 ```
----
-
-### 🧠 Key Engineering Learnings
-- Secure WebSocket authentication using JWT
-
-- Handling real-time collaboration at scale
-
-- Managing shared state consistency
-
-- Reducing system load with debouncing & throttling
-
-- Clean separation of UI and business logic
-
----
-
-### 📌 Future Improvements
-- Cursor position sharing
-
-- Typing indicators
-
-- Role-based access control
-
-- Rich-text / Markdown editor
-
-- Cloud deployment (Docker + CI/CD)
 
 ---
 
 ### 👤 Author
-- Kamal Poshala
+- **Kamal Poshala**
 - Master’s in Computer Science
 - University of Oklahoma
 
-
 ---
 
-# ✅ FINAL STEPS TO APPLY FIX
+### 🛠️ Maintenance & Deployment
 
-```powershell
-git add README.md
-git commit -m "Fix README formatting and architecture diagram"
-git push
+Built and maintained with **Antigravity AI**. Deployed on **Koyeb** (Backend) and **Vercel** (Frontend).
