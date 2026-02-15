@@ -14,9 +14,19 @@ SyncSpace is a premium, real-time collaborative workspace built for modern teams
 ![Dashboard](docs/images/dashboard.png)
 *Unified workspace management with a sleek animated interface.*
 
-### 👥 Real-Time Collaboration
+### 👥 Real-Time Collaboration & Invites
 ![Collaboration](docs/images/collab.png)
 *Live active user tracking, instant messaging, and collaborative canvas view.*
+
+### 🛠️ Advanced Workspace Management
+````carousel
+![Workspace Detail](docs/images/workspace_detail.png)
+<!-- slide -->
+![Workspace Isolation](docs/images/workspace_isolation.png)
+<!-- slide -->
+![Invite Details](docs/images/invite_details.png)
+````
+*Seamlessly switch between workspaces, manage members, and track presence.*
 
 ---
 
@@ -115,4 +125,12 @@ npm run dev
 
 ### 🛠️ Maintenance & Deployment
 
-Built and maintained with **Antigravity AI**. Deployed on **Koyeb** (Backend) and **Vercel** (Frontend).
+Built and maintained with **Antigravity AI**. 
+
+#### 🌐 Cloud Infrastructure
+````carousel
+![Koyeb Setup](docs/images/koyeb_setup.png)
+<!-- slide -->
+![Vercel Setup](docs/images/vercel_setup.png)
+````
+*Deployed on **Koyeb** (Persistent WebSocket Backend) and **Vercel** (Static Frontend).*
