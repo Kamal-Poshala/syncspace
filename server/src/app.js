@@ -4,7 +4,10 @@ const authRoutes = require("./routes/auth.routes");
 const workspaceRoutes = require("./routes/workspace.routes");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL || "*",
+    credentials: true
+}));
 app.use(express.json());
 
 const userRoutes = require("./routes/user.routes");

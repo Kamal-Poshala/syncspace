@@ -7,7 +7,7 @@ const socketAuth = require("./middleware/socketAuth");
 const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
-  cors: { origin: "*" },
+  cors: { origin: process.env.CLIENT_URL || "*" },
 });
 
 io.use(socketAuth);
@@ -25,7 +25,8 @@ require("./sockets/workspace")(io);
   );
   */
 
-  server.listen(3001, () => {
-    console.log("Server running on port 3001");
+  const PORT = process.env.PORT || 3001;
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
 })();
