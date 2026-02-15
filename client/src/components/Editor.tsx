@@ -3,18 +3,16 @@ interface EditorProps {
   onChange: (value: string) => void;
 }
 
-function Editor({ content, onChange }: EditorProps) {
+export default function Editor({ content, onChange }: EditorProps) {
   return (
-    <section className="editor">
-      <h3 style={{ marginBottom: "0.5rem" }}>Workspace Editor</h3>
-
+    <div className="h-full w-full p-4">
       <textarea
+        className="h-full w-full resize-none rounded-lg border border-gray-200 p-4 text-base leading-relaxed text-gray-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         value={content}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Start collaborating here..."
+        placeholder="Start typing to collaborate..."
+        spellCheck={false}
       />
-    </section>
+    </div>
   );
 }
-
-export default Editor;

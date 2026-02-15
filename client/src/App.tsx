@@ -1,104 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import type { Socket } from "socket.io-client";
-import { createSocket } from "./lib/socket";
-import Auth from "./components/Auth";
-import Layout from "./components/Layout";
-import UserPresence from "./components/UserPresence";
-import Editor from "./components/Editor";
-import { debounce } from "./lib/debounce";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { WorkspaceProvider } from "./context/WorkspaceContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import WorkspaceView from "./pages/WorkspaceView";
+import JoinWorkspace from "./pages/JoinWorkspace";
 
-const WORKSPACE_ID = "demo-workspace";
-
-function App() {
-  const [token, setToken] = useState<string | null>(null);
-  const [content, setContent] = useState("");
-  const [users, setUsers] = useState<
-    { userId: string; username: string }[]
-  >([]);
-
-  const socketRef = useRef<Socket | null>(null);
-  const hasJoinedRef = useRef(false);
-  const debouncedEmitRef = useRef<(value: string) => void>();
-
-  useEffect(() => {
-    if (!token) return;
-
-    const socket = createSocket(token);
-    socketRef.current = socket;
-
-    debouncedEmitRef.current = debounce((value: string) => {
-      socket.emit("workspace:update", {
-        workspaceId: WORKSPACE_ID,
-        content: value,
-      });
-    }, 200);
-
-    socket.connect();
-
-    socket.on("connect", () => {
-      if (hasJoinedRef.current) return;
-      hasJoinedRef.current = true;
-
-      socket.emit("workspace:join", {
-        workspaceId: WORKSPACE_ID,
-      });
-    });
-
-    socket.on("workspace:state", (data) => {
-      setContent(data.content);
-      setUsers(data.users);
-    });
-
-    socket.on("workspace:update", (data) => {
-      setContent(data.content);
-    });
-
-    socket.on("user:joined", (user) => {
-      setUsers((prev) =>
-        prev.find((u) => u.userId === user.userId)
-          ? prev
-          : [...prev, user]
-      );
-    });
-
-    socket.on("user:left", ({ userId }) => {
-      setUsers((prev) =>
-        prev.filter((u) => u.userId !== userId)
-      );
-    });
-
-    return () => {
-      socket.disconnect();
-      hasJoinedRef.current = false;
-    };
-  }, [token]);
-
-  if (!token) {
-    return (
-      <Layout>
-        <Auth onAuthSuccess={setToken} />
-      </Layout>
-    );
-  }
-
+export default function App() {
   return (
-    <Layout>
-      <h1>SyncSpace</h1>
-      <p style={{ color: "#555" }}>
-        Workspace: <strong>{WORKSPACE_ID}</strong>
-      </p>
+    <BrowserRouter>
+      <AuthProvider>
+        <WorkspaceProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/join/:code" element={<JoinWorkspace />} />
 
-      <UserPresence users={users} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/workspace/:slug" element={<WorkspaceView />} />
+              <Route path="/workspace/:slug/channel/:channelId" element={<WorkspaceView />} />
+              <Route path="/workspace/:slug/dm/:dmId" element={<WorkspaceView />} />
+              <Route path="/workspace/:slug/doc/:docId" element={<WorkspaceView />} />
+            </Route>
 
-      <Editor
-        content={content}
-        onChange={(value) => {
-          setContent(value);
-          debouncedEmitRef.current?.(value);
-        }}
-      />
-    </Layout>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </WorkspaceProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;

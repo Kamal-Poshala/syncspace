@@ -1,98 +1,123 @@
 const Workspace = require("../models/Workspace");
 
-// Throttle locks per workspaceId
-const updateLocks = new Map();
+const channelHandler = require("./channel");
+const dmHandler = require("./dm");
 
-function registerWorkspaceHandlers(io, socket) {
-  // JOIN WORKSPACE
-  socket.on("workspace:join", async ({ workspaceId }) => {
-    if (!workspaceId) return;
+module.exports = (io) => {
+  // Helper to get all users in a room
+  const getRoomUsers = (roomName) => {
+    const room = io.sockets.adapter.rooms.get(roomName);
+    if (!room) return [];
 
-    socket.join(workspaceId);
-
-    let workspace = await Workspace.findOne({ workspaceId });
-
-    if (!workspace) {
-      workspace = await Workspace.create({
-        workspaceId,
-        content: "",
-        users: [],
-      });
-    }
-
-    const user = {
-      userId: socket.user.userId,
-      username: socket.user.username,
-    };
-
-    if (!workspace.users.find((u) => u.userId === user.userId)) {
-      workspace.users.push(user);
-      await workspace.save();
-    }
-
-    // Send full state to new user
-    socket.emit("workspace:state", {
-      content: workspace.content,
-      users: workspace.users,
-    });
-
-    // Notify others
-    socket.to(workspaceId).emit("user:joined", user);
-
-    console.log(
-      `User ${user.username} joined workspace ${workspaceId}`
-    );
-  });
-
-  // UPDATE WORKSPACE CONTENT (THROTTLED)
-  socket.on("workspace:update", async ({ workspaceId, content }) => {
-    if (!workspaceId || typeof content !== "string") return;
-
-    const workspace = await Workspace.findOne({ workspaceId });
-    if (!workspace) return;
-
-    // 🔹 Broadcast immediately for real-time UX
-    socket.to(workspaceId).emit("workspace:update", { content });
-
-    // 🔹 Throttle DB writes per workspace
-    if (updateLocks.get(workspaceId)) return;
-
-    updateLocks.set(workspaceId, true);
-
-    setTimeout(async () => {
-      try {
-        workspace.content = content;
-        await workspace.save();
-      } catch (err) {
-        console.error("DB update failed:", err);
-      } finally {
-        updateLocks.delete(workspaceId);
+    const users = [];
+    room.forEach((socketId) => {
+      const socket = io.sockets.sockets.get(socketId);
+      if (socket && socket.user) {
+        users.push({
+          ...socket.user,
+          socketId: socket.id
+        });
       }
-    }, 300); // one DB write every 300ms max
-  });
+    });
+    return users;
+  };
 
-  // DISCONNECT CLEANUP
-  socket.on("disconnect", async () => {
-    const workspaces = await Workspace.find({
-      "users.userId": socket.user.userId,
+  io.on("connection", (socket) => {
+    console.log(`Socket connected: ${socket.user.username} (${socket.id})`);
+
+    // Initialize Handlers
+    channelHandler(io, socket);
+    dmHandler(io, socket);
+
+    // Join Workspace Room
+    socket.on("workspace:join", async ({ slug }) => {
+      if (!slug) return;
+
+      try {
+        // Validate membership
+        const workspace = await Workspace.findOne({
+          slug,
+          "members.userId": socket.user.id
+        });
+
+        if (!workspace) {
+          socket.emit("error", { message: "Access denied or workspace not found" });
+          return;
+        }
+
+        const room = `workspace:${slug}`;
+
+        // Check if already in room to avoid duplicate logic if re-joining
+        if (socket.rooms.has(room)) return;
+
+        socket.join(room);
+
+        // Notify others
+        socket.to(room).emit("user:joined", {
+          user: socket.user,
+          socketId: socket.id
+        });
+
+        // Send Snapshot to joiner
+        socket.emit("workspace:connected", {
+          slug,
+          content: workspace.content,
+          users: getRoomUsers(room),
+        });
+
+        console.log(`User ${socket.user.username} joined ${slug}`);
+      } catch (err) {
+        console.error("Join error:", err);
+      }
     });
 
-    for (const workspace of workspaces) {
-      workspace.users = workspace.users.filter(
-        (u) => u.userId !== socket.user.userId
-      );
+    // Leave Workspace
+    socket.on("workspace:leave", ({ slug }) => {
+      const room = `workspace:${slug}`;
+      socket.leave(room);
+      socket.to(room).emit("user:left", { socketId: socket.id });
+    });
 
-      await workspace.save();
+    // Content Update
+    socket.on("workspace:update", async ({ slug, content }) => {
+      const room = `workspace:${slug}`;
+      // Verify room membership (basic check)
+      if (!socket.rooms.has(room)) return;
 
-      socket.to(workspace.workspaceId).emit("user:left", {
-        userId: socket.user.userId,
+      // Persist to DB (Throttled ideally, but direct for now)
+      await Workspace.findOneAndUpdate({ slug }, { content });
+
+      // Broadcast to others
+      socket.to(room).emit("workspace:update", { content, updatedBy: socket.user.username });
+    });
+
+    // Typing Indicators
+    socket.on("typing:start", ({ slug }) => {
+      socket.to(`workspace:${slug}`).emit("typing:start", {
+        username: socket.user.username,
+        socketId: socket.id
       });
+    });
 
-      console.log(
-        `User ${socket.user.username} left workspace ${workspace.workspaceId}`
-      );
-    }
+    socket.on("typing:stop", ({ slug }) => {
+      socket.to(`workspace:${slug}`).emit("typing:stop", {
+        username: socket.user.username,
+        socketId: socket.id
+      });
+    });
+
+    // Handle Disconnect
+    socket.on("disconnecting", () => {
+      const rooms = [...socket.rooms];
+      rooms.forEach((room) => {
+        if (room.startsWith("workspace:")) {
+          socket.to(room).emit("user:left", { socketId: socket.id });
+        }
+      });
+    });
+
+    socket.on("disconnect", () => {
+      console.log(`Socket disconnected: ${socket.user.username}`);
+    });
   });
-}
-
-module.exports = registerWorkspaceHandlers;
+};
