@@ -18,15 +18,14 @@ SyncSpace is a premium, real-time collaborative workspace built for modern teams
 ![Collaboration](docs/images/collab.png)
 *Live active user tracking, instant messaging, and collaborative canvas view.*
 
-### 🛠️ Advanced Workspace Management
-````carousel
-![Workspace Detail](docs/images/workspace_detail.png)
-<!-- slide -->
-![Workspace Isolation](docs/images/workspace_isolation.png)
-<!-- slide -->
-![Invite Details](docs/images/invite_details.png)
-````
-*Seamlessly switch between workspaces, manage members, and track presence.*
+---
+
+## 🛠️ Workspace Management
+
+| Workspace Details | Isolation & Presence | Invite Management |
+| :---: | :---: | :---: |
+| ![Workspace Detail](docs/images/workspace_detail.png) | ![Workspace Isolation](docs/images/workspace_isolation.png) | ![Invite Details](docs/images/invite_details.png) |
+| *Switching between workspaces* | *Isolated environments* | *Managing member invites* |
 
 ---
 
@@ -90,6 +89,15 @@ graph TD
 
 ---
 
+## 🌐 Cloud Infrastructure
+
+| Koyeb (Backend) | Vercel (Frontend) |
+| :---: | :---: |
+| ![Koyeb Setup](docs/images/koyeb_setup.png) | ![Vercel Setup](docs/images/vercel_setup.png) |
+| *Persistent WebSocket Hosting* | *Static Site Hosting* |
+
+---
+
 ## ▶️ Running Locally (Development)
 
 ### 1️⃣ Configure Environment
@@ -125,12 +133,4 @@ npm run dev
 
 ### 🛠️ Maintenance & Deployment
 
-Built and maintained with **Antigravity AI**. 
-
-#### 🌐 Cloud Infrastructure
-````carousel
-![Koyeb Setup](docs/images/koyeb_setup.png)
-<!-- slide -->
-![Vercel Setup](docs/images/vercel_setup.png)
-````
-*Deployed on **Koyeb** (Persistent WebSocket Backend) and **Vercel** (Static Frontend).*
+Built and maintained with **Antigravity AI**. Deployed on **Koyeb** (Backend) and **Vercel** (Frontend).
