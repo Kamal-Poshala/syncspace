@@ -5,7 +5,21 @@ const workspaceRoutes = require("./routes/workspace.routes");
 
 const app = express();
 app.use(cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'https://syncspace-frontend-six.vercel.app',
+            'https://syncspace-nu.vercel.app',
+            process.env.CLIENT_URL
+        ].filter(Boolean);
+
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(null, false);
+        }
+    },
     credentials: true
 }));
 app.use(express.json());
