@@ -5,22 +5,10 @@ const workspaceRoutes = require("./routes/workspace.routes");
 
 const app = express();
 app.use(cors({
-    origin: (origin, callback) => {
-        const allowedOrigins = [
-            'https://syncspace-frontend-six.vercel.app',
-            'https://syncspace-nu.vercel.app',
-            process.env.CLIENT_URL
-        ].filter(Boolean);
-
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.warn(`CORS blocked for origin: ${origin}`);
-            callback(null, false);
-        }
-    },
-    credentials: true
+    origin: true, // Echoes back the request origin if it matches credentials needs
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 

@@ -14,23 +14,15 @@ io.use(socketAuth);
 require("./sockets/workspace")(io);
 
 (async () => {
-  await connectDB();
-
-  // Ensure default workspace - Commenting out as we now require owner
-  /*
-  await Workspace.updateOne(
-    { slug: "general" },
-    { name: "General" },
-    { upsert: true }
-  );
-  */
-
   const PORT = process.env.PORT || 3001;
-  const HOST = '0.0.0.0';
-  server.listen(PORT, HOST, () => {
-    console.log(`Server is running!`);
-    console.log(`- Local: http://localhost:${PORT}`);
-    console.log(`- Network: http://${HOST}:${PORT}`);
-    console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server listening on port ${PORT}`);
+
+    // Connect to DB after starting listener to satisfy health checks
+    connectDB().then(() => {
+      console.log('Database connection background initialized');
+    }).catch(err => {
+      console.error('Database connection failed:', err);
+    });
   });
 })();
