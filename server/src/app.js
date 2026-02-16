@@ -5,7 +5,7 @@ const workspaceRoutes = require("./routes/workspace.routes");
 
 const app = express();
 app.use(cors({
-    origin: true, // Echoes back the request origin if it matches credentials needs
+    origin: (origin, callback) => callback(null, true),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

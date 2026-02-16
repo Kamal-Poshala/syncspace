@@ -13,7 +13,7 @@ async function connectDB() {
       console.error("CRITICAL: Could not connect to MongoDB Atlas. This is likely an IP Whitelist issue. Ensure 0.0.0.0/0 is allowed in Atlas Network Access.");
     }
     console.error(err.message);
-    process.exit(1);
+    // process.exit(1); // Do not exit, allow server to stay alive for health checks
   }
 }
 
