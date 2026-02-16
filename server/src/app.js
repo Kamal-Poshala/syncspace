@@ -10,6 +10,16 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Log requests to help debug
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url} - Origin: ${req.get('origin')}`);
+    next();
+});
+
+// Health check for Railway/Vercel
+app.get("/", (req, res) => res.status(200).json({ status: "ok", service: "SyncSpace API" }));
+app.get("/health", (req, res) => res.status(200).json({ status: "healthy" }));
+
 const userRoutes = require("./routes/user.routes");
 const uploadRoutes = require("./routes/upload.routes");
 const path = require("path");
