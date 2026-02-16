@@ -4,6 +4,14 @@ const connectDB = require("./config/db");
 const Workspace = require("./models/Workspace");
 const socketAuth = require("./middleware/socketAuth");
 
+// Global error handlers for production diagnostics
+process.on('uncaughtException', (err) => {
+  console.error('CRITICAL UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('UNHANDLED REJECTION at:', promise, 'reason:', reason);
+});
+
 const server = http.createServer(app);
 
 const io = require("socket.io")(server, {
