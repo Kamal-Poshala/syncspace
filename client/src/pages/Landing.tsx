@@ -121,7 +121,7 @@ function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: st
                 {icon}
             </div>
             <h3 className="mb-4 text-2xl font-black tracking-tight uppercase italic">{title}</h3>
-            <p className="text-gray-500 font-medium leading-relaxed">{desc}</p>
+            <p className="text-gray-300 font-medium leading-relaxed">{desc}</p>
         </motion.div>
     );
 }
