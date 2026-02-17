@@ -42,7 +42,7 @@ export default function Landing() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="mx-auto mt-12 max-w-2xl text-xl text-gray-400 sm:text-2xl font-light leading-relaxed"
+                    className="mx-auto mt-12 max-w-2xl text-xl text-balance text-white/70 sm:text-2xl font-light leading-relaxed"
                 >
                     Transcending traditional collaboration. A hyper-fluid workspace designed for the next generation of digital architects.
                 </motion.p>
