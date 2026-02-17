@@ -24,13 +24,16 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 
-        // Check if origin is in our explicit allowed list
-        if (allowedOrigins.includes(origin) || origin === clientUrl) {
-            return callback(null, true);
+        // TEMPORARY: Allow all origins but LOG them to identify the blocker
+        console.log(`[CORS DEBUG] Request from Origin: ${origin}`);
+
+        // Check if origin is in our explicit allowed list (just for info)
+        const isAllowed = allowedOrigins.includes(origin) || origin === clientUrl;
+        if (!isAllowed) {
+            console.warn(`[CORS WARNING] Origin ${origin} is not in explicit allowlist but permitted temporarily.`);
         }
 
-        console.error(`CORS Blocked: ${origin}`); // Log why it failed
-        return callback(new Error('Not allowed by CORS'), false);
+        return callback(null, true);
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
