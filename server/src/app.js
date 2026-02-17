@@ -4,7 +4,19 @@ const authRoutes = require("./routes/auth.routes");
 const workspaceRoutes = require("./routes/workspace.routes");
 
 const app = express();
-app.use(cors()); // Allow all origins for debugging
+
+// Robust CORS configuration
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+app.use(cors({
+    origin: clientUrl,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
+
+// Explicit Preflight Handler
+app.options("*", cors());
+
 app.use(express.json());
 
 // Log requests to help debug
