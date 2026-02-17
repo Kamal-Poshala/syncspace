@@ -103,7 +103,7 @@ export default function WorkspaceView() {
                         <div className="h-8 w-px bg-white/10 hidden md:block"></div>
 
                         <div className="flex items-center gap-3 overflow-hidden">
-                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-gray-500">Workspace</span>
+                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-white/40">Workspace</span>
                             <span className="text-lg font-black text-white truncate tracking-tight">{currentWorkspace.name}</span>
                             {isMessaging && (
                                 <>
@@ -142,7 +142,7 @@ export default function WorkspaceView() {
                                 "flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all border",
                                 showChatPanel
                                     ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(var(--primary),0.3)]"
-                                    : "bg-white/5 text-gray-400 border-white/10 hover:border-primary/40 hover:text-white"
+                                    : "bg-white/5 text-gray-300 border-white/10 hover:border-primary/40 hover:text-white"
                             )}
                         >
                             <MessageSquare className="h-4 w-4" />
