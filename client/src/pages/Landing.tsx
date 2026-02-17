@@ -38,13 +38,14 @@ export default function Landing() {
                     <div className="mt-16">
                         <Link
                             to="/register"
-                            className="group relative overflow-hidden rounded-full bg-white px-12 py-6 text-xl font-bold text-black transition-all hover:scale-105 active:scale-95"
+                            className="group relative inline-flex items-center gap-4 rounded-full border border-white/20 bg-white/5 px-12 py-6 text-lg font-black uppercase tracking-[0.2em] text-white backdrop-blur-md transition-all hover:bg-white/10 hover:border-primary/50 hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] active:scale-95"
                         >
-                            <span className="relative z-10 flex items-center gap-3">
+                            <span className="relative z-10">
                                 Initialize
-                                <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
                             </span>
-                            <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity" />
+                            <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-transform group-hover:translate-x-2">
+                                <ArrowRight className="h-5 w-5" />
+                            </div>
                         </Link>
                     </div>
                 </motion.div>
