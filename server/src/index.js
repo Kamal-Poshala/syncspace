@@ -38,25 +38,27 @@ const io = require("socket.io")(server, {
 io.use(socketAuth);
 require("./sockets/workspace")(io);
 
-(async () => {
-  // Railway assigns a PORT environment variable, usually not 3001. We MUST use it.
-  const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
-  console.log("----------------------------------------");
-  console.log(`Starting server implementation...`);
-  console.log(`Environment PORT: ${process.env.PORT}`);
-  console.log(`Final Listening PORT: ${PORT}`);
-  console.log(`CLIENT_URL: ${process.env.CLIENT_URL}`);
-  console.log("----------------------------------------");
+console.log("----------------------------------------");
+console.log(`[STARTUP] Starting server...`);
+console.log(`[STARTUP] Environment raw PORT: '${process.env.PORT}'`);
+console.log(`[STARTUP] Final Listening PORT: ${PORT}`);
+console.log(`[STARTUP] CLIENT_URL: ${process.env.CLIENT_URL}`);
+console.log("----------------------------------------");
 
-  server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server successfully listening on port ${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`[SUCCESS] Server successfully bound to 0.0.0.0:${PORT}`);
 
-    // Connect to DB after starting listener to satisfy health checks
-    connectDB().then(() => {
-      console.log('Database connection background initialized');
-    }).catch(err => {
-      console.error('Database connection failed:', err);
-    });
+  // Connect to DB only after server is proven to be listening
+  connectDB().then(() => {
+    console.log('[DB] Database connection initialized');
+  }).catch(err => {
+    console.error('[DB] Database connection failed:', err);
   });
-})();
+});
+
+server.on('error', (error) => {
+  console.error('[FATAL] Server listen error:', error);
+  process.exit(1);
+});
