@@ -47,9 +47,9 @@ console.log(`[STARTUP] Final Listening PORT: ${PORT}`);
 console.log(`[STARTUP] CLIENT_URL: ${process.env.CLIENT_URL}`);
 console.log("----------------------------------------");
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   const address = server.address();
-  console.log(`[SUCCESS] Server successfully bound to port ${PORT}`);
+  console.log(`[SUCCESS] Server successfully bound to port ${PORT} (IPv4)`);
   console.log(`[DEBUG] Server address info:`, typeof address === 'string' ? address : JSON.stringify(address));
 
   // Connect to DB only after server is proven to be listening
