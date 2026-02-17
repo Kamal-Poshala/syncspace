@@ -14,8 +14,8 @@ app.use(cors({
     credentials: true
 }));
 
-// Explicit Preflight Handler for Express 5
-app.options("*any", cors());
+// Explicit Preflight Handler for Express 5 (regex-based catch-all)
+app.options(/(.*)/, cors());
 
 app.use(express.json());
 
