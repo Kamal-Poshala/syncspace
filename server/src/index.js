@@ -22,9 +22,18 @@ io.use(socketAuth);
 require("./sockets/workspace")(io);
 
 (async () => {
+  // Railway assigns a PORT environment variable, usually not 3001. We MUST use it.
   const PORT = process.env.PORT || 3001;
+
+  console.log("----------------------------------------");
+  console.log(`Starting server implementation...`);
+  console.log(`Environment PORT: ${process.env.PORT}`);
+  console.log(`Final Listening PORT: ${PORT}`);
+  console.log(`CLIENT_URL: ${process.env.CLIENT_URL}`);
+  console.log("----------------------------------------");
+
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`Server successfully listening on port ${PORT}`);
 
     // Connect to DB after starting listener to satisfy health checks
     connectDB().then(() => {
