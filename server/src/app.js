@@ -13,12 +13,23 @@ app.get("/", (req, res) => res.status(200).json({ status: "ok", service: "SyncSp
 app.get("/health", (req, res) => res.status(200).json({ status: "healthy" }));
 
 // Robust CORS configuration
+const allowedOrigins = [
+    "https://syncspace-frontend-six.vercel.app",
+    "http://localhost:5173",
+    process.env.CLIENT_URL // Include env var just in case
+];
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
 app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl requests)
-        // Also allow the specific clientUrl
-        if (!origin || origin === clientUrl) return callback(null, true);
+        if (!origin) return callback(null, true);
+
+        // Check if origin is in our explicit allowed list
+        if (allowedOrigins.includes(origin) || origin === clientUrl) {
+            return callback(null, true);
+        }
+
+        console.error(`CORS Blocked: ${origin}`); // Log why it failed
         return callback(new Error('Not allowed by CORS'), false);
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
