@@ -1,81 +1,107 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Zap, Layout, Shield } from "lucide-react";
+import { ArrowRight, Globe, Users, Code } from "lucide-react";
+import { motion } from "framer-motion";
 import LandingNavbar from "../components/LandingNavbar";
 import LandingFooter from "../components/LandingFooter";
 
 export default function Landing() {
     return (
-        <div className="relative min-h-screen w-full overflow-hidden font-sans text-white">
-            {/* Background Video */}
-            <div className="absolute inset-0 z-0">
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="h-full w-full object-cover opacity-40"
-                    // Placeholder video until user uploads 'hero-bg.mp4'
-                    // Using a high-quality tech/abstract placeholder from a reliable CDN if local missing
-                    src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-blue-lines-997-large.mp4"
-                // Fallback to local
-                // src="/assets/hero-bg.mp4"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
-                <div className="absolute inset-0 bg-[url('/assets/grid.svg')] opacity-20" />
+        <div className="relative min-h-screen w-full overflow-hidden mesh-background text-white selection:bg-primary/30">
+            {/* Ambient Background Elements */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full animate-blob" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/20 blur-[120px] rounded-full animate-blob [animation-delay:2s]" />
             </div>
 
             <LandingNavbar />
 
             {/* Hero Section */}
-            <main className="relative z-10 flex flex-col items-center justify-center px-4 pt-20 text-center sm:pt-32">
-                <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md">
-                    <span className="flex h-2 w-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-                    <span className="text-sm font-medium text-gray-300">v2.0 Now Available</span>
-                </div>
+            <main className="relative z-10 flex flex-col items-center justify-center px-4 pt-32 pb-20 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-8 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md"
+                >
+                    <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+                    <span className="text-sm font-medium text-gray-300">SyncSpace Architecture v2.0</span>
+                </motion.div>
 
-                <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight sm:text-7xl">
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-gray-400">
-                        Sync Your World.
+                <motion.h1
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="mx-auto max-w-5xl text-6xl font-black tracking-tighter sm:text-8xl lg:text-9xl leading-[0.9]"
+                >
+                    <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">
+                        SYNC YOUR
                     </span>
-                    <span className="block mt-2">Build Together.</span>
-                </h1>
+                    <span className="block italic text-primary">ENTITY.</span>
+                </motion.h1>
 
-                <p className="mx-auto mt-8 max-w-2xl text-lg text-gray-400 sm:text-xl">
-                    The premium collaborative workspace for modern teams. Real-time editing, rich media, and seamless communication in one stunning interface.
-                </p>
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="mx-auto mt-12 max-w-2xl text-xl text-gray-400 sm:text-2xl font-light leading-relaxed"
+                >
+                    Transcending traditional collaboration. A hyper-fluid workspace designed for the next generation of digital architects.
+                </motion.p>
 
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-12 flex flex-col gap-6 sm:flex-row sm:justify-center"
+                >
                     <Link
                         to="/register"
-                        className="group relative flex items-center justify-center gap-2 rounded-full bg-blue-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-blue-500 hover:shadow-[0_0_40px_rgba(37,99,235,0.5)]"
+                        className="group relative overflow-hidden rounded-full bg-primary px-10 py-5 text-xl font-bold text-white transition-all hover:scale-105 active:scale-95"
                     >
-                        Start Collaborating Free
-                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        <span className="relative z-10 flex items-center gap-2">
+                            Initialize Space
+                            <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-500 to-primary bg-[length:200%_auto] animate-[gradient_3s_linear_infinite] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
                     <Link
                         to="/login"
-                        className="flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-8 py-4 text-lg font-medium text-white backdrop-blur-md transition-colors hover:bg-white/10"
+                        className="flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-10 py-5 text-xl font-medium text-white backdrop-blur-md transition-all hover:bg-white/10 hover:border-white/20"
                     >
-                        Live Demo
+                        Enter Core
                     </Link>
-                </div>
+                </motion.div>
+
+                {/* Floating Preview Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: "spring", bounce: 0.4, delay: 0.7 }}
+                    className="mt-32 w-full max-w-6xl glass-card rounded-[2.5rem] p-4 group overflow-hidden"
+                >
+                    <div className="aspect-video w-full rounded-[1.5rem] bg-black/40 overflow-hidden relative">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-primary/20 text-9xl font-black rotate-[-10deg] select-none">SYNCSPACE</div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
+                    </div>
+                </motion.div>
 
                 {/* Feature Grid */}
-                <div id="features" className="mt-24 grid w-full max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 scroll-mt-24">
+                <div id="features" className="mt-40 grid w-full max-w-6xl grid-cols-1 gap-12 px-4 sm:grid-cols-3">
                     <FeatureCard
-                        icon={<Layout />}
-                        title="Premium UI"
-                        desc="Glassmorphism, animated gradients, and a pixel-perfect design system."
+                        icon={<Globe className="h-7 w-7" />}
+                        title="Universal Scale"
+                        desc="Built on a globally distributed edge network for zero-latency collaboration across any distance."
                     />
                     <FeatureCard
-                        icon={<Zap />}
-                        title="Real-time Sync"
-                        desc="Changes happen instantly with WebSocket technology. No lag, just flow."
+                        icon={<Users className="h-7 w-7" />}
+                        title="Neural Sync"
+                        desc="Advanced CRDT algorithms ensure perfect state harmony between all participants, instantly."
                     />
                     <FeatureCard
-                        icon={<Shield />}
-                        title="Secure & Private"
-                        desc="Your data is encrypted and protected. Private workspaces by default."
+                        icon={<Code className="h-7 w-7" />}
+                        title="Architectural Integrity"
+                        desc="A design system forged in glass and light, prioritizing focus and creative cognitive flow."
                     />
                 </div>
             </main>
@@ -87,12 +113,15 @@ export default function Landing() {
 
 function FeatureCard({ icon, title, desc }: { icon: any, title: string, desc: string }) {
     return (
-        <div className="group rounded-2xl border border-white/10 bg-white/5 p-8 text-left backdrop-blur-sm transition-all hover:-translate-y-1 hover:bg-white/10 hover:border-white/20">
-            <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-blue-600/20 p-3 text-blue-400 ring-1 ring-blue-500/30 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+        <motion.div
+            whileHover={{ y: -10 }}
+            className="group rounded-3xl border border-white/5 bg-white/[0.02] p-10 text-left backdrop-blur-xl transition-all hover:bg-white/[0.05] hover:border-primary/20"
+        >
+            <div className="mb-6 inline-flex items-center justify-center rounded-2xl bg-primary/10 p-4 text-primary ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 {icon}
             </div>
-            <h3 className="mb-2 text-xl font-bold">{title}</h3>
-            <p className="text-gray-400">{desc}</p>
-        </div>
+            <h3 className="mb-4 text-2xl font-black tracking-tight uppercase italic">{title}</h3>
+            <p className="text-gray-500 font-medium leading-relaxed">{desc}</p>
+        </motion.div>
     );
 }

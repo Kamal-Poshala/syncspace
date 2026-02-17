@@ -5,9 +5,10 @@ import Sidebar from "../components/Sidebar";
 import RichEditor from "../components/RichEditor";
 import ChatArea from "../components/ChatArea";
 import { useAuth } from "../context/AuthContext";
-import { ChevronLeft, MessageSquare, FileText } from "lucide-react";
+import { ChevronLeft, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
+import { motion } from "framer-motion";
 
 // Helper to generate consistent color from string
 const stringToColor = (str: string) => {
@@ -79,130 +80,124 @@ export default function WorkspaceView() {
     const userColor = user ? stringToColor(user._id || user.username) : "#fef08a";
 
     // Navigation logic
-    const isEditingDoc = !!docId;
     const isMessaging = !!channelId || !!dmId;
 
     const currentChannel = isMessaging ? channels.find(c => c._id === channelId) : null;
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-gray-50/50 transition-colors duration-500">
+        <div className="flex h-screen w-full overflow-hidden mesh-background selection:bg-primary/30">
             <Sidebar />
 
             <main className="flex flex-1 flex-col relative z-10 overflow-hidden">
-                {/* Topbar */}
-                <header className="flex h-16 items-center justify-between border-b border-gray-200/60 bg-white/80 px-4 md:px-6 backdrop-blur-xl transition-all">
-                    <div className="flex items-center gap-4 text-gray-800">
+                {/* Topbar - Ultra Glass */}
+                <header className="flex h-20 items-center justify-between border-b border-white/5 bg-white/[0.02] px-6 md:px-10 backdrop-blur-2xl transition-all">
+                    <div className="flex items-center gap-6">
                         <Link
                             to="/dashboard"
-                            className="flex items-center gap-1 rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition-colors"
+                            className="flex items-center gap-2 rounded-2xl bg-white/5 p-2 text-gray-400 hover:text-white hover:bg-primary/20 transition-all border border-white/5"
                             title="Back to Dashboard"
                         >
-                            <ChevronLeft className="h-5 w-5" />
+                            <ChevronLeft className="h-6 w-6" />
                         </Link>
 
-                        <div className="h-6 w-px bg-gray-200 ml-1 mr-2 hidden md:block"></div>
+                        <div className="h-8 w-px bg-white/10 hidden md:block"></div>
 
-                        <div className="flex items-center gap-2 overflow-hidden">
-                            <span className="hidden sm:inline text-sm font-medium text-gray-400">Workspaces</span>
-                            <span className="hidden sm:inline text-gray-300">/</span>
-                            <span className="text-sm font-bold text-gray-900 truncate">{currentWorkspace.name}</span>
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-gray-500">Workspace</span>
+                            <span className="text-lg font-black text-white truncate tracking-tight">{currentWorkspace.name}</span>
                             {isMessaging && (
                                 <>
-                                    <span className="text-gray-300">/</span>
-                                    <span className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 truncate">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-primary/40 mx-1"></div>
+                                    <span className="flex items-center gap-2 text-sm font-bold text-primary truncate bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                                         <MessageSquare className="h-3.5 w-3.5" />
-                                        {currentChannel ? `#${currentChannel.name}` : "Direct Message"}
-                                    </span>
-                                </>
-                            )}
-                            {isEditingDoc && (
-                                <>
-                                    <span className="text-gray-300">/</span>
-                                    <span className="flex items-center gap-1.5 text-sm font-semibold text-purple-600 truncate">
-                                        <FileText className="h-3.5 w-3.5" />
-                                        Canvas
+                                        {currentChannel ? currentChannel.name : "Direct Message"}
                                     </span>
                                 </>
                             )}
                         </div>
 
                         {typingUsers.length > 0 && (
-                            <span className="ml-4 hidden lg:flex items-center text-xs font-medium text-blue-600 animate-in fade-in slide-in-from-left-4 duration-300">
-                                <span className="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-blue-600"></span>
-                                {typingUsers[0]} is typing...
+                            <span className="ml-6 hidden lg:flex items-center text-[10px] font-black uppercase tracking-tighter text-primary animate-pulse">
+                                {typingUsers[0]} IS SYNCHRONIZING...
                             </span>
                         )}
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                        <div className="flex -space-x-2 overflow-hidden p-1 mr-2 hidden sm:flex">
-                            {onlineUsers.slice(0, 3).map((u) => (
+                    <div className="flex items-center space-x-6">
+                        <div className="flex -space-x-3 overflow-hidden p-1 hidden sm:flex">
+                            {onlineUsers.slice(0, 4).map((u) => (
                                 <img
                                     key={u._id}
-                                    className="h-8 w-8 rounded-full ring-2 ring-white object-cover shadow-sm transition-transform hover:z-10 hover:scale-110"
+                                    className="h-9 w-9 rounded-xl ring-2 ring-background object-cover shadow-2xl transition-all hover:z-10 hover:-translate-y-1"
                                     src={u.avatar || "https://via.placeholder.com/32"}
                                     alt={u.username}
                                     title={u.username}
                                 />
                             ))}
-                            {onlineUsers.length > 3 && (
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-2 ring-white text-[10px] font-bold text-gray-500 shadow-sm">
-                                    +{onlineUsers.length - 3}
-                                </div>
-                            )}
                         </div>
 
                         <button
                             onClick={() => setShowChatPanel(!showChatPanel)}
                             className={cn(
-                                "flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold transition-all border",
+                                "flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all border",
                                 showChatPanel
-                                    ? "bg-blue-50 text-blue-600 border-blue-200"
-                                    : "bg-white text-gray-500 border-gray-200 hover:border-blue-300 hover:text-blue-500"
+                                    ? "bg-primary text-white border-primary shadow-[0_0_20px_rgba(var(--primary),0.3)]"
+                                    : "bg-white/5 text-gray-400 border-white/10 hover:border-primary/40 hover:text-white"
                             )}
                         >
-                            <MessageSquare className="h-3.5 w-3.5" />
-                            {showChatPanel ? "Hide Chat" : "Show Chat"}
+                            <MessageSquare className="h-4 w-4" />
+                            {showChatPanel ? "Collapse" : "Expand Chat"}
                         </button>
                     </div>
                 </header>
 
-                {/* Content Area - Split Layout */}
-                <div className="flex flex-1 overflow-hidden p-0 relative bg-gray-50/30">
+                {/* Content Area - Floating Glass Layers */}
+                <div className="flex flex-1 overflow-hidden p-6 gap-6 relative">
                     {/* Main Workspace (Canvas) */}
                     <div className={cn(
-                        "flex-1 h-full flex flex-col transition-all duration-300 ease-in-out",
+                        "flex-1 h-full flex flex-col transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
                         showChatPanel && isMessaging ? "hidden lg:flex" : "flex"
                     )}>
-                        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar">
-                            <div className="mx-auto max-w-5xl h-full">
-                                <RichEditor
-                                    content={content}
-                                    onChange={handleContentChange}
-                                    userColor={userColor}
-                                />
+                        <div className="flex-1 glass-card rounded-[2rem] overflow-hidden flex flex-col">
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 custom-scrollbar">
+                                <div className="mx-auto max-w-4xl h-full">
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                    >
+                                        <RichEditor
+                                            content={content}
+                                            onChange={handleContentChange}
+                                            userColor={userColor}
+                                        />
+                                    </motion.div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Chat Side Panel */}
                     <div className={cn(
-                        "h-full border-l border-gray-200 bg-white transition-all duration-300 ease-in-out z-20 shadow-xl lg:shadow-none",
-                        showChatPanel && isMessaging ? "w-full lg:w-[400px]" : "w-0 opacity-0 overflow-hidden border-none"
+                        "h-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] z-20",
+                        showChatPanel && isMessaging
+                            ? "w-full lg:w-[450px] opacity-100 translate-x-0"
+                            : "w-0 opacity-0 translate-x-20 pointer-events-none"
                     )}>
-                        {isMessaging && <ChatArea channelId={channelId} dmId={dmId} />}
+                        <div className="h-full glass-card rounded-[2rem] overflow-hidden shadow-2xl">
+                            {isMessaging && <ChatArea channelId={channelId} dmId={dmId} />}
 
-                        {!isMessaging && showChatPanel && (
-                            <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-gray-50/50">
-                                <div className="mb-4 rounded-full bg-blue-100/50 p-4">
-                                    <MessageSquare className="h-8 w-8 text-blue-500" />
+                            {!isMessaging && showChatPanel && (
+                                <div className="h-full flex flex-col items-center justify-center p-12 text-center">
+                                    <div className="mb-8 rounded-3xl bg-primary/10 p-6 ring-1 ring-primary/20">
+                                        <MessageSquare className="h-12 w-12 text-primary" />
+                                    </div>
+                                    <h3 className="text-2xl font-black text-white tracking-tight uppercase italic">Neural Channel</h3>
+                                    <p className="mt-4 text-gray-500 font-medium leading-relaxed">
+                                        Activate a stream from the nexus to begin real-time communication.
+                                    </p>
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900">Workspace Chat</h3>
-                                <p className="mt-2 text-sm text-gray-500 max-w-xs">
-                                    Select a channel or direct message from the sidebar to chat with your team while you edit.
-                                </p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </main>

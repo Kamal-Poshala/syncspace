@@ -13,12 +13,14 @@ import Dashboard from "./pages/Dashboard";
 import WorkspaceView from "./pages/WorkspaceView";
 import JoinWorkspace from "./pages/JoinWorkspace";
 import NotFound from "./pages/NotFound";
+import CustomCursor from "./components/CustomCursor";
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <WorkspaceProvider>
+          <CustomCursor />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/pricing" element={<Pricing />} />
