@@ -14,8 +14,25 @@ process.on('unhandledRejection', (reason, promise) => {
 
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  "https://syncspace-frontend-six.vercel.app",
+  "http://localhost:5173",
+  process.env.CLIENT_URL // fallback
+].filter(Boolean); // Filter out undefined fallback
+
 const io = require("socket.io")(server, {
-  cors: { origin: process.env.CLIENT_URL || "*" },
+  cors: {
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.log(`Socket CORS Blocked: ${origin}`);
+      return callback(new Error('Not allowed by CORS'), false);
+    },
+    methods: ["GET", "POST"]
+  },
 });
 
 io.use(socketAuth);
