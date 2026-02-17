@@ -5,27 +5,32 @@ const workspaceRoutes = require("./routes/workspace.routes");
 
 const app = express();
 
+app.use(express.json());
+
+// -- CRITICAL: Health checks MUST be before CORS --
+// Railway/Vercel health checks often have no Origin header
+app.get("/", (req, res) => res.status(200).json({ status: "ok", service: "SyncSpace API" }));
+app.get("/health", (req, res) => res.status(200).json({ status: "healthy" }));
+
 // Robust CORS configuration
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
 app.use(cors({
-    origin: clientUrl,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // Also allow the specific clientUrl
+        if (!origin || origin === clientUrl) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'), false);
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
-
-
-app.use(express.json());
 
 // Log requests to help debug
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url} - Origin: ${req.get('origin')}`);
     next();
 });
-
-// Health check for Railway/Vercel
-app.get("/", (req, res) => res.status(200).json({ status: "ok", service: "SyncSpace API" }));
-app.get("/health", (req, res) => res.status(200).json({ status: "healthy" }));
 
 const userRoutes = require("./routes/user.routes");
 const uploadRoutes = require("./routes/upload.routes");
