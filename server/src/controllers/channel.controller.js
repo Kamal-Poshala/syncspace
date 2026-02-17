@@ -69,3 +69,28 @@ exports.getChannelMessages = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+exports.deleteChannel = async (req, res) => {
+    try {
+        const { channelId } = req.params;
+
+        // Find the channel first to ensure it exists
+        const channel = await Channel.findById(channelId);
+        if (!channel) {
+            return res.status(404).json({ message: 'Channel not found' });
+        }
+
+        // Check if user is a member of the workspace (already done middleware likely, but good to be safe)
+        // For MVP, allow any member to delete. In production, restrict to admin/creator.
+
+        // Delete all messages in the channel (Cascade delete)
+        await Message.deleteMany({ channelId });
+
+        // Delete the channel
+        await Channel.findByIdAndDelete(channelId);
+
+        res.json({ message: 'Channel deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

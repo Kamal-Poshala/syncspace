@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useWorkspace } from "../context/WorkspaceContext";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
-import { Hash, Plus, UserPlus, Settings, LogOut } from "lucide-react";
+import { Hash, Plus, UserPlus, Settings, LogOut, Trash2 } from "lucide-react";
 import { useState } from "react";
 import InviteModal from "./InviteModal";
 import ProfileSettings from "./ProfileSettings";
@@ -10,7 +10,7 @@ import CreateChannelModal from "./CreateChannelModal";
 import WorkspaceSettingsModal from "./WorkspaceSettingsModal";
 
 export default function Sidebar() {
-    const { workspaces, currentWorkspace, channels, dms, refreshChannels } = useWorkspace();
+    const { workspaces, currentWorkspace, channels, dms, refreshChannels, deleteChannel } = useWorkspace();
     const { user, logout } = useAuth();
     const [showInvite, setShowInvite] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
@@ -106,7 +106,7 @@ export default function Sidebar() {
                                 key={channel._id}
                                 to={`/workspace/${currentWorkspace?.slug}/channel/${channel._id}`}
                                 className={cn(
-                                    "flex w-full items-center rounded-md px-2 py-1.5 text-sm transition",
+                                    "group flex w-full items-center rounded-md px-2 py-1.5 text-sm transition",
                                     // TODO: Highlight active channel based on URL
                                     "text-gray-400 hover:bg-gray-800 hover:text-white"
                                 )}
@@ -116,7 +116,20 @@ export default function Sidebar() {
                                 ) : (
                                     <Hash className="mr-2 h-4 w-4 text-gray-500" />
                                 )}
-                                <span className="truncate">{channel.name}</span>
+                                <span className="truncate flex-1">{channel.name}</span>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (confirm(`Are you sure you want to delete #${channel.name}?`)) {
+                                            deleteChannel(channel._id);
+                                        }
+                                    }}
+                                    className="ml-2 hidden h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-red-500/20 hover:text-red-500 group-hover:flex"
+                                    title="Delete Channel"
+                                >
+                                    <span className="sr-only">Delete</span>
+                                    <Trash2 className="h-3 w-3" />
+                                </button>
                             </Link>
                         ))}
 

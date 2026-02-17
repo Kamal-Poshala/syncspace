@@ -22,6 +22,7 @@ interface WorkspaceContextType {
     typingUsers: string[];
     channels: Channel[];
     refreshChannels: () => Promise<void>;
+    deleteChannel: (channelId: string) => Promise<void>;
     dms: DM[];
     refreshDMs: () => Promise<void>;
     getOrCreateDM: (otherUserId: string) => Promise<DM | null>;
@@ -260,6 +261,21 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const deleteChannel = async (channelId: string) => {
+        if (!token) return;
+        try {
+            await apiRequest(`/channels/${channelId}`, {
+                method: "DELETE",
+                token,
+            });
+            // Update local state by removing deleted channel
+            setChannels(prev => prev.filter(c => c._id !== channelId));
+        } catch (err) {
+            console.error("Failed to delete channel", err);
+            throw err;
+        }
+    };
+
     return (
         <WorkspaceContext.Provider value={{
             workspaces,
@@ -278,6 +294,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
             typingUsers,
             channels,
             refreshChannels,
+            deleteChannel,
             dms,
             refreshDMs,
             getOrCreateDM,

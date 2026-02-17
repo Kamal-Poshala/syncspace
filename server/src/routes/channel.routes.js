@@ -12,4 +12,7 @@ router.get('/workspace/:workspaceId', verifyToken, channelController.getWorkspac
 // Get messages for a channel
 router.get('/:channelId/messages', verifyToken, channelController.getChannelMessages);
 
+// Delete a channel
+router.delete('/:channelId', verifyToken, channelController.deleteChannel);
+
 module.exports = router;
